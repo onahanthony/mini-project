@@ -1,0 +1,41 @@
+---
+
+- name: web server deployment
+  hosts: all
+  remote_user: ubuntu
+  become: true
+  tasks:
+  - name: update repository
+    apt:
+      update_cache: yes
+      upgrade: dist
+
+  - name: install apache package
+    apt:
+      name: apache2
+      state: present
+
+  - name: set up apache service
+    service:
+      name: apache2
+      state: started
+      enabled: yes
+
+  - name: add php support for apache
+    apt:
+      name: libapache2-mod-php
+      state: latest
+
+  - name: setting up timezone
+    timezone:
+      name: Africa/Lagos
+  - name: remove index.html
+    file:
+      name: /var/www/html/index.html
+      state: absent
+
+  - name: copy php file to the server
+    copy:
+      src: index.php
+      dest: /var/www/html
+
